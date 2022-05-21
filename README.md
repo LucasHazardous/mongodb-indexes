@@ -76,3 +76,31 @@ There is an example covering TTL Index. Main function *(ttl_index)*:
 - displays all data in the collection
 - disconnects
 
+### Exercise
+
+<details>
+    <summary>
+    Now try to write a command that will create index on title in books collection where rating is higer than 7.
+    Use this example as reference:
+        
+        db.restaurants.createIndex({ cuisine: 1 }, { partialFilterExpression: { score: { $lt: 5 } } })
+    
+</summary>
+
+Solution:
+
+    db.books.createIndex({ title: 1 }, { partialFilterExpression: { rating: { $gt: 7 } } })
+
+If you execute this command:
+
+    db.books.find({title: "Book 3", rating: { $gt: 7 } })
+
+and book's rating is not greater than 7 then Mongo won't even have to scan a single document to return you the empty result.
+
+</details>
+
+## Summary
+
+Indexes are very useful for optimizing your database and can be really benefitting. As we saw today there are many types of indexes and they can have different properties that can be used for your advantage. So now experiment with them on your own and have an amazing day.
+
+*Lucas Hazardous*
