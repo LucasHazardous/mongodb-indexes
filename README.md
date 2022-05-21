@@ -28,3 +28,12 @@ This is the interesting part:
 There is an information about returned documents and it is correct because indeed we have 2 documents with rating value set to 8. But what is even more interesting is the **totalDocsExamined** information that is set to 5. It is the total number of documents that Mongo needed to search to find the result.
 
 So how can we optimize this?
+
+![Index created and test](./example_3.png)
+
+I created index for the rating value and performed find query to show you that it works the same way - Mongo still returns 2 documents.
+
+![Index performance stats](./example_4.png)
+
+Wow - now the total number of documents scanned is only 2! That's because Mongo used the index to find these documents.
+
