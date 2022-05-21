@@ -37,3 +37,42 @@ I created index for the rating value and performed find query to show you that i
 
 Wow - now the total number of documents scanned is only 2! That's because Mongo used the index to find these documents.
 
+## Types of indexes
+
+These are examples of index types - for more information visit [MongoDB documentation](https://www.mongodb.com/docs/manual/indexes/#index-types):
+
+- Single Field (the one in the example above)
+- Compound Index (index that consists of multiple fields)
+- Multikey Index (used for indexing content stored in arrays)
+- Geospatial Index (for geospatial coordinate data)
+- Text Indexes (indexing string content)
+- Hashed Indexes (indexes hash of the value of a field)
+
+## Index properties
+
+- Unique Indexes (reject duplicate data for indexed field)
+- Partial Indexes (index only documents that meet certain requirements)
+- Sparse Indexes (index skips documents that do not have the indexed field)
+- TTL Indexes (automatically remove documents after certain amount of time)
+- Hidden Indexes (for hiding an index)
+
+## Collation
+
+When working with string data in a language other than english it is important to set collation. If I had german book titles, I would set collation for an index:
+
+    db.books.createIndex({ title: 1 }, { collation: { locale: "de" }})
+
+# Practice
+
+Now fire up your local MongoDB server and go to [index.js](./index.js).
+There is an example covering TTL Index. Main function *(ttl_index)*:
+
+- connects to the database
+- creates **sessions** collection if it's possible
+- creates ttl index on **creation_date** property
+- inserts one document
+- displays all data in the collection
+- waits 60 seconds (index is set to remove after 10 seconds but Mongo checks for documents to remove every **60 seconds**)
+- displays all data in the collection
+- disconnects
+

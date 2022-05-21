@@ -1,8 +1,5 @@
 const mongo = require("mongodb");
-
-function timeout(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
+const sessionsCollectionName = "sessions";
 
 async function ttl_index() {
     const client = new mongo.MongoClient("mongodb://127.0.0.1:27017");
@@ -10,9 +7,29 @@ async function ttl_index() {
 
     const db = await client.db("index_test");
 
+    await createNewSessionCollectionIfPossible(db, sessionsCollectionName);
 
+    await createTTLIndex(db, sessionsCollectionName);
+
+    await insertOneDocument(db, sessionsCollectionName);
+
+    await showAllDataInCollection(db, sessionsCollectionName);
+
+    await timeout(60000);
+
+    await showAllDataInCollection(db, sessionsCollectionName);
+    console.log(new Date());
+
+    await client.close();
+}
+
+async function showAllDataInCollection(db, collection) {
+    console.log(await db.collection(collection).find({}).toArray());
+}
+
+async function createNewSessionCollectionIfPossible(db, collection) {
     try {
-        await db.createCollection("sessions", {
+        await db.createCollection(collection, {
             validator: {
                 $jsonSchema: {
                     bsonType: "object",
@@ -31,28 +48,25 @@ async function ttl_index() {
     } catch (error) {
         console.log("collection exists");
     }
+}
 
-    await db.collection("sessions").deleteMany({});
-
-    await db.collection("sessions").createIndex({
+async function createTTLIndex(db, collection) {
+    await db.collection(collection).createIndex({
         "creation_date": 1
     }, {
         expireAfterSeconds: 10
     });
+}
 
-    await db.collection("sessions").insertOne({
+async function insertOneDocument(db, collection) {
+    await db.collection(collection).insertOne({
         "token": "a",
         "creation_date": new Date()
     });
+}
 
-    console.log(await db.collection("sessions").find({}).toArray());
-
-    await timeout(60000);
-
-    console.log(await db.collection("sessions").find({}).toArray());
-    console.log(new Date());
-
-    await client.close();
+function timeout(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 ttl_index().catch(err => console.log(err));
